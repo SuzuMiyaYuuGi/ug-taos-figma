@@ -1,7 +1,7 @@
 # Lakebed capsule reference
 
 ## Porting plain HTML screens into a capsule
-The pipeline produces one plain HTML file per screen. To port: each screen's body becomes a Preact component; `class` → `className`; every CSS rule becomes Tailwind arbitrary-value classes on the element (`background:#1e293b` → `bg-[#1e293b]`, `font-size:13px` → `text-[13px]`) because capsules have **no CSS files**; `<a href="dashboard.html">` → `<Link to="/dashboard">` and `index.html` → route `/`; `:hover`/`:focus` and media queries port as Tailwind variants (`hover:bg-[#...]`, `md:w-[...]`); Google Fonts links are dropped (no `<head>` control) — closest system stack instead, flag the gap.
+Mode B first builds one plain HTML+CSS file per screen from the pipeline's analysis (design tokens as CSS variables, the user's chosen width as a fixed centered container, `<a href>` navigation). To port that HTML into the capsule: each screen's body becomes a Preact component; `class` → `className`; every CSS rule becomes Tailwind arbitrary-value classes on the element (`background:#1e293b` → `bg-[#1e293b]`, `font-size:13px` → `text-[13px]`) because capsules have **no CSS files**; `<a href="dashboard.html">` → `<Link to="/dashboard">` and `index.html` → route `/`; `:hover`/`:focus` and media queries port as Tailwind variants (`hover:bg-[#...]`, `md:w-[...]`); Google Fonts links are dropped (no `<head>` control) — closest system stack instead, flag the gap.
 
 Captured from https://docs.lakebed.dev/llms-full.txt. Enough to scaffold, build, and deploy a static multi-screen prototype without re-fetching. For anything beyond this, fetch `/llms-full.txt`.
 

@@ -1,22 +1,26 @@
-# ug-taos-figma — Design image → editable Figma / clickable prototype
+# ug-taos-figma — Design image → professional Figma-ready SVG / clickable prototype
 
-An [Agent Skill](https://agentskills.io) for **Claude Code** and **Codex CLI**: attach design/mockup/UX-UI images and get back an **editable Figma design** (real Auto-layout frames + editable text layers — not a flat image), or optionally a **clickable prototype deployed on [Lakebed](https://docs.lakebed.dev/)**.
+An [Agent Skill](https://agentskills.io) for **Claude Code** and **Codex CLI**: attach design/mockup/UX-UI images and get back **professional SVG screens that drag straight into Figma** — named layers, token-based colors ready to become Figma Variables, shared components identical across screens, everything sized to the width YOU choose. Optionally deploys a **clickable prototype on [Lakebed](https://docs.lakebed.dev/)** instead.
 
 ## What it does
 
 ```
-design PNGs ──► analyze (colors/px/text, retina-normalize)
-            ──► ask ONLY what can't be inferred (defaults offered)
-            ──► one plain HTML+CSS file per screen (pixel-faithful, clickable locally)
+design PNGs ──► analyze (retina-normalize, color-token table, shared components)
+            ──► ask: target output width (always) + only what can't be inferred
+            ──► one professional SVG per screen + tokens.svg palette sheet
+                • 8pt grid, scaled to your chosen width (no hard-coded sizes)
+                • <g id> named layers, <text> stays editable text
+                • sidebar/nav authored once (<defs>+<use>) → identical on every screen
+                • consistent hexes → Selection Colors → Figma Variables in one pass
             ──► verify vs. original (capped screenshot loop)
-            ──► Mode A (default): send to Figma via generate_figma_design → editable layers
-                └─ Figma MCP not connected? SVG fallback (drag into Figma, text stays editable)
+            ──► deliver SVGs (drag into Figma)
+                └─ bonus: Figma MCP connected? also pushes via generate_figma_design
             ──► Mode B (on request): deploy as a Lakebed capsule → public URL
 ```
 
 ## Requirements
 
-- **Mode A (Figma):** the official [Figma MCP server](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server) connected to your agent ([Claude Code setup](https://help.figma.com/hc/en-us/articles/39888612464151-Claude-Code-and-Figma-Set-up-the-MCP-server)) + a Figma account. Without it, the skill still delivers importable SVGs.
+- **Mode A (SVG → Figma):** nothing — SVG delivery works out of the box. The official [Figma MCP server](https://help.figma.com/hc/en-us/articles/32132100833559-Guide-to-the-Figma-MCP-server) ([Claude Code setup](https://help.figma.com/hc/en-us/articles/39888612464151-Claude-Code-and-Figma-Set-up-the-MCP-server)) is an optional bonus for Auto-layout push.
 - **Mode B (Lakebed):** Node.js (`npx lakebed` is fetched on demand).
 
 ## Install
@@ -75,7 +79,7 @@ Want a shareable live URL instead of (or after) Figma? Ask for it — that switc
 | File | Purpose |
 |---|---|
 | `SKILL.md` | The skill: shared pipeline + Figma mode + Lakebed mode |
-| `references/figma-handoff.md` | `generate_figma_design` usage + editable-SVG fallback rules |
+| `references/figma-handoff.md` | Figma-ready SVG standard (grid, tokens, shared components) + optional MCP push |
 | `references/lakebed-capsule.md` | Lakebed capsule structure, CLI, HTML→capsule porting rules |
 
 ## License
