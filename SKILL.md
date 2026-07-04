@@ -39,6 +39,7 @@ Create a work folder under cwd (kebab-case from the design's purpose), one `<scr
 - **Scale everything** from measured px by the step-3 factor (uniform zoom — a "scaled 1440" layout, not a re-flowed one; that's the deliberate design). Then snap **sizes and gaps** to the 8pt grid (multiples of 8; 4 for fine detail) — positions come from the running sum of snapped sizes/gaps, NOT independently snapped, so boxes never drift apart or overlap. Text baselines and icon offsets inside a component are free. **Font sizes:** scale by the factor, round to the nearest whole px, and fix the result once in the type scale — every screen uses those exact sizes. Artboard height = measured height × factor, snapped.
 - **Named layers:** every logical block is `<g id="sidebar">`, `<g id="card-revenue">` — ids become Figma layer names. Shallow, ordered top-to-bottom.
 - **Shared components once:** author each repeating region (sidebar, nav) as a single `<defs><g id="cmp-sidebar">…</g></defs>` block and place with `<use href="#cmp-sidebar"/>`; paste the SAME defs block verbatim into every screen file. Identical by construction — never redraw it per screen. **Canonical state = every item inactive**; ANY per-screen difference (active menu item, page title in a shared nav) is a named overlay group on top of the `<use>` — see the reference for overlay rules.
+- **Repeating elements inside a screen (table rows, list items, card grids):** author the FIRST item fully, then clone its geometry verbatim per item (y offset = item height × n) changing only the content — identical heights and column positions, so the designer can turn one row into a Figma component. Tables follow the **column-grid + text-fitting rules** in the reference — text must never cross into the next column.
 - **Colors only from the token table.** Same role = same hex everywhere, so the designer can bulk-convert via Selection Colors → Variables.
 - **Text stays text:** `<text>` elements with real font-family/size/weight — never outline to paths.
 - **`tokens.svg`:** one swatch row per token (rect + name + hex) plus the type scale — the designer's one-glance reference for creating Figma Variables/styles.
@@ -65,6 +66,8 @@ When the user wants a shareable live URL: build one plain HTML+CSS file per scre
 | Outlining text to paths | `<text>` always — designer must be able to retype |
 | Off-grid magic numbers (13px gaps) | Snap to 8pt grid (4 for fine detail) |
 | Rasterizing or `foreignObject` in SVG | Real shapes only — Figma ignores/flattens the rest |
+| Table text overflowing/overlapping columns | Column grid defined once; budget text width, truncate with … |
+| Each table row drawn freehand (drifting geometry) | Clone row 1's geometry verbatim, change only content |
 | Choosing Lakebed mode uninvited | SVG/Figma is the default; deploy only when the user asks for a URL |
 
 ## Notes

@@ -35,6 +35,31 @@ For any region repeating across screens (sidebar, top nav, tab bar, footer):
 - Never redraw or "adjust" it per screen — identical size/spacing everywhere is the requirement. **Any per-screen difference is an overlay**, not a fork: active menu item, page title/breadcrumb in a shared nav, badge counts. Overlay = a named group on top of the `<use>` containing an **opaque** highlight rect plus a restyled copy of the label/icon (`<g id="sidebar-active-products">`); the opaque rect hides the inactive copy underneath, so Figma shows one visible label. If a strip of the region is entirely per-screen (e.g. breadcrumb bar), exclude that strip from the component instead.
 - Figma expands `<use>` into a group on import, so every screen carries a same-named, same-sized copy the designer can turn into a real Figma component.
 
+## Tables & repeating lists — the column grid
+
+SVG `<text>` neither wraps nor clips. If you don't budget text width yourself, long values run under the next column — the #1 way generated tables become unusable. Rules:
+
+**1. Define the column grid ONCE per table** (before drawing anything):
+
+```
+columns: [
+  { name: "product", x: 24,  width: 320, align: "start"  },
+  { name: "status",  x: 360, width: 120, align: "start"  },
+  { name: "price",   x: 496, width: 96,  align: "end"    },
+]
+rowHeight: 56   headerHeight: 48   cellPadX: 16
+```
+
+Every header cell and every row cell reads its x/width/alignment from this grid — never eyeball a cell individually. Column widths come from the design, snapped; they must sum (with gaps) to the table width.
+
+**2. Text fitting — budget, then truncate.** Approximate text width ≈ 0.6 × font-size × character count. Budget per cell = column width − 2 × cellPadX. Over budget → truncate the STRING with `…` before writing the `<text>` element. Never rely on the next column's background to hide overflow, never squeeze with `textLength` (Figma ignores it, glyphs distort).
+
+**3. Alignment via anchor, not spaces:** left → `text-anchor="start"` at `x + cellPadX`; right (numbers) → `text-anchor="end"` at `x + width − cellPadX`; center → `text-anchor="middle"` at `x + width/2`.
+
+**4. One row = one group, geometry cloned:** structure as `<g id="table-products">` → `<g id="table-header">` + `<g id="row-01">`, `<g id="row-02">`… Author row 1 completely (cells, badge pills, divider line INSIDE the row group so the row moves as one unit); every other row copies that geometry verbatim at `y = headerHeight + rowHeight × n`, changing only content. Identical rows = designer selects row-01, makes it a Figma component, swaps text.
+
+The same template-clone discipline applies to any repeating list: menu items, card grids, notification rows — first item is the template, the rest are geometry clones with new content.
+
 ## Shapes & text
 
 - Text as `<text>` with `font-family` (real name, e.g. `Inter`), `font-size`, `font-weight`, `fill` from tokens — NEVER outline text to paths (designer must retype). Font must exist in Figma for text to import as text; note any font the user must install.

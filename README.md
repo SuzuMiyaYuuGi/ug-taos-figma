@@ -11,6 +11,8 @@ design PNGs ──► analyze (retina-normalize, color-token table, shared compo
                 • 8pt grid, scaled to your chosen width (no hard-coded sizes)
                 • <g id> named layers, <text> stays editable text
                 • sidebar/nav authored once (<defs>+<use>) → identical on every screen
+                • tables/lists from one row template: fixed column grid, text
+                  truncated to fit — no cut/overlapping columns
                 • consistent hexes → Selection Colors → Figma Variables in one pass
             ──► verify vs. original (capped screenshot loop)
             ──► deliver SVGs (drag into Figma)
