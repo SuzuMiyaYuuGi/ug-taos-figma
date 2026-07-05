@@ -32,17 +32,29 @@ Read every attached image. Establish: how many screens, which is which (list the
 
 Format: ONE message, numbered questions, each with your suggested default. Write in the user's language.
 
-### 4. Build each screen as a professional SVG
-Create a work folder under cwd (kebab-case from the design's purpose), one `<screen>.svg` per screen, plus `tokens.svg` (the palette sheet). Follow `references/figma-handoff.md` exactly — the short version:
+### 4. Build the Figma handoff set
+Create a work folder under cwd (kebab-case from the design's purpose) with the standard handoff layout:
+
+```
+<project>/
+  tokens.svg          # palette + type scale sheet
+  components.svg      # UI-kit sheet: every reusable component, labeled
+  screens/
+    01-login.svg      # numbered in flow order
+    02-dashboard.svg
+```
+
+Follow `references/figma-handoff.md` exactly — the short version:
 
 - **Artboard = chosen width:** `viewBox="0 0 <W> <H>"` with `width`/`height` attributes set to the same values so it drops into Figma at 1:1.
 - **Scale everything** from measured px by the step-3 factor (uniform zoom — a "scaled 1440" layout, not a re-flowed one; that's the deliberate design). Then snap **sizes and gaps** to the 8pt grid (multiples of 8; 4 for fine detail) — positions come from the running sum of snapped sizes/gaps, NOT independently snapped, so boxes never drift apart or overlap. Text baselines and icon offsets inside a component are free. **Font sizes:** scale by the factor, round to the nearest whole px, and fix the result once in the type scale — every screen uses those exact sizes. Artboard height = measured height × factor, snapped.
-- **Named layers:** every logical block is `<g id="sidebar">`, `<g id="card-revenue">` — ids become Figma layer names. Shallow, ordered top-to-bottom.
+- **Figma-convention layer names:** every logical block is a group whose id reads like a Figma layer — **PascalCase, English, slash-namespaced**: `<g id="Sidebar">`, `<g id="Card/Revenue">`, `<g id="Button/Primary">`, `<g id="Icon/Search">`. Shallow, ordered top-to-bottom. (Internal `<defs>` ids stay kebab `cmp-*` and are always wrapped: `<g id="Sidebar"><use href="#cmp-sidebar"/></g>` so the designer sees the clean name.)
 - **Shared components once:** author each repeating region (sidebar, nav) as a single `<defs><g id="cmp-sidebar">…</g></defs>` block and place with `<use href="#cmp-sidebar"/>`; paste the SAME defs block verbatim into every screen file. Identical by construction — never redraw it per screen. **Canonical state = every item inactive**; ANY per-screen difference (active menu item, page title in a shared nav) is a named overlay group on top of the `<use>` — see the reference for overlay rules.
 - **Repeating elements inside a screen (table rows, list items, card grids):** author the FIRST item fully, then clone its geometry verbatim per item (y offset = item height × n) changing only the content — identical heights and column positions, so the designer can turn one row into a Figma component. Tables follow the **column-grid + text-fitting rules** in the reference — text must never cross into the next column.
 - **Colors only from the token table.** Same role = same hex everywhere, so the designer can bulk-convert via Selection Colors → Variables.
 - **Text stays text:** `<text>` elements with real font-family/size/weight — never outline to paths.
-- **`tokens.svg`:** one swatch row per token (rect + name + hex) plus the type scale — the designer's one-glance reference for creating Figma Variables/styles.
+- **`tokens.svg`:** one swatch row per token (rect + name + hex) plus the type scale with Figma-style names (`Heading/H1 · 24/32 · SemiBold`) — the designer's one-glance reference for creating Figma Variables/styles.
+- **`components.svg`:** the UI-kit sheet — one labeled specimen of every shared component, repeating template (Table/Row, Card), button/form control per visible state, and an icon grid. Same markup as the screens (see reference). This is where the designer componentizes once.
 
 ### 5. Verify against the original — capped loop
 - **With preview/screenshot tools:** serve the folder with a static server (`npx -y serve .`), **resize the viewport to the chosen width × artboard height** before screenshotting (default presets crop a 1920 artboard), compare each screen to the source image. **Cap: 3 passes total.** Fix only clearly-wrong things (color, misalignment, missing element); re-screenshot only changed screens. Two classes of delta are EXPECTED — do not "fix" them back: 8pt-grid snap offsets (≤4px) and text metrics from a locally-missing font (flag the font instead). Stop early when visually faithful — don't chase sub-pixels.
@@ -51,7 +63,7 @@ Create a work folder under cwd (kebab-case from the design's purpose), one `<scr
 ponytail: 3-pass cap is a deliberate token ceiling; raise only if the user asks for tighter fidelity.
 
 ### 6. Deliver
-- **Default:** the SVG files + `tokens.svg` + assumptions list. Tell the user: drag SVGs into Figma; convert palette to Variables via Selection Colors (hexes are consistent by construction).
+- **Default:** the handoff folder + assumptions list + a short **designer guide in the user's language** (the 5-step import checklist template is in the reference): install listed fonts → drag SVGs into Figma → Variables via Selection Colors → componentize from `components.svg` → text styles from `tokens.svg`.
 - **Bonus, only if the Figma MCP is connected and authed** (skip silently otherwise): also push screens via `generate_figma_design` for Auto-layout frames — see the MCP section of `references/figma-handoff.md`.
 
 ## Mode B — Lakebed deploy (only when asked)
